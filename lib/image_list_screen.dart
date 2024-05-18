@@ -1,7 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+
+import 'image_details_screen.dart';
 
 class ImageListScreen extends StatefulWidget {
   const ImageListScreen({super.key});
@@ -33,7 +34,7 @@ class ImageListScreenState extends State<ImageListScreen> {
       body: ListView.separated(
         itemCount: imageList.length,
         itemBuilder: (context, index) {
-          return _imageList(imageList[index]);
+          return _imageList(imageList[index], context);
         },
         separatorBuilder: (_, __) => const SizedBox(
           height: 10,
@@ -42,11 +43,25 @@ class ImageListScreenState extends State<ImageListScreen> {
     );
   }
 
-  Widget _imageList(Images images) {
+  Widget _imageList(Images images, BuildContext context) {
     return ListTile(
-      leading: Image.network(
-        images.thumbnailUrl,
-        height: 120,
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ImageDetails(
+                imageUrl: images.url,
+                title: images.title,
+                id: images.id,
+              ),
+            ),
+          );
+        },
+        child: Image.network(
+          images.thumbnailUrl,
+          height: 120,
+        ),
       ),
       title: Text(images.title),
     );
@@ -59,11 +74,8 @@ class ImageListScreenState extends State<ImageListScreen> {
     Uri uri = Uri.parse(apiURL);
     Response response = await get(uri);
 
-    print(response.statusCode);
-    print(response.body);
     if (response.statusCode == 200) {
       List<dynamic> jsonImageList = jsonDecode(response.body);
-      //final jsonImageList = decodedData[''];
 
       for (Map<String, dynamic> img in jsonImageList) {
         Images images = Images(

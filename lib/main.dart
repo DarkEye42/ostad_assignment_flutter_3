@@ -12,6 +12,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'Module 12 - Assignment',
       home: ImageListScreen(),
     );
   }
